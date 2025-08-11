@@ -47,6 +47,9 @@ INSTALLED_APPS = [
     'rsvp',
     'external_events',
     'drf_yasg',
+    'accounts',
+    'celery',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -146,6 +149,9 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 
+AUTH_USER_MODEL = "accounts.User"
+
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
@@ -156,6 +162,8 @@ CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Africa/Nairobi'
+
 
 TICKETMASTER_API_KEY = os.getenv('TICKETMASTER_API_KEY')
     
