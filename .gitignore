@@ -6,3 +6,5 @@ venv/
 __pycache__
 *.pyc
 
+# Email debug log
+email_debug.log

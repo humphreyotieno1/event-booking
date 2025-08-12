@@ -6,9 +6,12 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils import timezone
 from datetime import timedelta
+import logging
 
 from .models import User
-from .tasks import send_activation_email
+from .tasks import send_activation_email_async
+
+logger = logging.getLogger(__name__)
 
 @receiver(post_save, sender=User)
 def send_activation_email_signal(sender, instance, created, **kwargs):
@@ -19,13 +22,11 @@ def send_activation_email_signal(sender, instance, created, **kwargs):
         expiration = (timezone.now() + timedelta(hours=24)).timestamp()
         
         confirm_url = (
-            f"{settings.FRONTEND_URL}/api/auth/verify-email/"
+            f"{settings.FRONTEND_URL}/api/accounts/verify-email/"
             f"?uid={uid}&token={token}&expires={expiration}"
         )
 
         try:
-            send_activation_email.delay(instance.email, confirm_url)
+            send_activation_email_async.delay(instance.email, confirm_url)
         except Exception as e:
-            import logging
-            logger = logging.getLogger(__name__)
             logger.error(f"Failed to send activation email: {str(e)}")

@@ -29,6 +29,7 @@ urlpatterns = [
     # Password Reset
     path('reset-password/', views.reset_password_request, name='reset-password-request'),
     path('reset-password/confirm/', views.reset_password_confirm, name='reset-password-confirm'),
+    path('reset-password/verify/', views.reset_password_verify, name='reset_password_verify'),  # NEW - for GET requests
     
     # User Profile
     path('profile/', views.user_profile, name='user-profile'),
