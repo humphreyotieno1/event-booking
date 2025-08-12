@@ -125,20 +125,6 @@ def register_view(request):
         )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@swagger_auto_schema(
-    method='post',
-    responses={
-        200: openapi.Response(description='Logout successful'),
-        401: 'Unauthorized',
-    },
-    security=[{"Bearer": []}]
-)
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def logout_view(request):
-    logout(request)
-    return Response({'message': 'Logout successful'})
-
 # Email Verification Views
 @swagger_auto_schema(
     method='get',
