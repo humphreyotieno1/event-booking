@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q, Count
 from django.utils import timezone
@@ -24,7 +24,7 @@ class EventCategoryViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = EventCategory.objects.all()
     serializer_class = EventCategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
 class EventTagViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -32,19 +32,29 @@ class EventTagViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = EventTag.objects.all()
     serializer_class = EventTagSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
 class EventViewSet(viewsets.ModelViewSet):
     """
     ViewSet for viewing and creating events.
     """
     queryset = Event.objects.all()
-    permission_classes = [IsOrganizerOrReadOnly, IsEventOwnerOrReadOnly]
+    permission_classes = [AllowAny]  # Allow public read access
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['category', 'tags', 'is_recurring']
     search_fields = ['title', 'description', 'location']
     ordering_fields = ['start_time', 'title', 'created_at']
     ordering = ['-start_time']
+    
+    def get_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            permission_classes = [IsAuthenticated, IsOrganizerOrReadOnly, IsEventOwnerOrReadOnly]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
     
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
@@ -52,6 +62,10 @@ class EventViewSet(viewsets.ModelViewSet):
         return EventSerializer
     
     def get_queryset(self):
+        # Fix for Swagger schema generation
+        if getattr(self, 'swagger_fake_view', False):
+            return Event.objects.none()
+        
         queryset = Event.objects.select_related('created_by', 'category').prefetch_related('tags', 'reviews')
         
         # Apply search filters
@@ -148,6 +162,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, CanReviewEvent]
     
     def get_queryset(self):
+        # Fix for Swagger schema generation
+        if getattr(self, 'swagger_fake_view', False):
+            return Review.objects.none()
+        
         event_id = self.kwargs.get('event_id')
         if event_id:
             return Review.objects.filter(event_id=event_id).select_related('user')

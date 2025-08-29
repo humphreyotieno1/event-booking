@@ -18,6 +18,10 @@ class RSVPViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, CanRSVPToEvent, IsRSVPOwnerOrReadOnly]
     
     def get_queryset(self):
+        # Fix for Swagger schema generation
+        if getattr(self, 'swagger_fake_view', False):
+            return RSVP.objects.none()
+        
         return RSVP.objects.filter(user=self.request.user).select_related('event', 'user')
     
     @action(detail=False, methods=['post'], url_path='events/(?P<event_id>[^/.]+)')

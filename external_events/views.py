@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 import requests
@@ -19,26 +19,59 @@ class ExternalEventViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = ExternalEvent.objects.all()
     serializer_class = ExternalEventSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]  # Allow public search, require auth for other operations
+    
+    def get_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        if self.action in ['import_event']:
+            permission_classes = [IsAuthenticated]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
+    
+    def get_queryset(self):
+        # Fix for Swagger schema generation
+        if getattr(self, 'swagger_fake_view', False):
+            return ExternalEvent.objects.none()
+        
+        return ExternalEvent.objects.all()
     
     @action(detail=False, methods=['get'])
     def search(self, request):
         """Search external events from various providers."""
-        serializer = ExternalEventSearchSerializer(data=request.query_params)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        data = serializer.validated_data
-        provider = data.get('provider', 'ticketmaster')
-        
-        if provider == 'ticketmaster':
-            return self._search_ticketmaster(request, data)
-        elif provider == 'seatgeek':
-            return self._search_seatgeek(request, data)
-        else:
+        try:
+            print(f"DEBUG: Search method called with params: {request.query_params}")
+            
+            serializer = ExternalEventSearchSerializer(data=request.query_params)
+            if not serializer.is_valid():
+                print(f"DEBUG: Serializer validation failed: {serializer.errors}")
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+            print(f"DEBUG: Serializer validation successful: {serializer.validated_data}")
+            
+            data = serializer.validated_data
+            provider = data.get('provider', 'ticketmaster')
+            
+            print(f"DEBUG: Provider: {provider}")
+            
+            if provider == 'ticketmaster':
+                return self._search_ticketmaster(request, data)
+            elif provider == 'seatgeek':
+                return self._search_seatgeek(request, data)
+            else:
+                return Response(
+                    {'error': 'Unsupported provider'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        except Exception as e:
+            print(f"DEBUG: Unexpected error in search method: {str(e)}")
+            import traceback
+            traceback.print_exc()
             return Response(
-                {'error': 'Unsupported provider'},
-                status=status.HTTP_400_BAD_REQUEST
+                {'error': f'Unexpected error: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
     
     def _search_ticketmaster(self, request, data):
