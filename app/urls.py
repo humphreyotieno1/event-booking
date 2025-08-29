@@ -32,6 +32,9 @@ urlpatterns = [
     
     # API Endpoints
     path('api/accounts/', include('accounts.urls')),
+    path('api/events/', include('events.urls')),
+    path('api/rsvp/', include('rsvp.urls')),
+    path('api/external/', include('external_events.urls')),
     
     # JSON Schema
     re_path(r'^api/schema(?P<format>\.json|\.yaml)$', 

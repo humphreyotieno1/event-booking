@@ -8,9 +8,11 @@ click-plugins==1.1.1.2
 click-repl==0.3.0
 Django==5.2.5
 django_celery_results==2.6.0
+django-filter==24.1
 djangorestframework==3.16.1
 djangorestframework_simplejwt==5.5.1
 drf-yasg==1.21.10
+gunicorn==21.2.0
 inflection==0.5.1
 kombu==5.5.4
 packaging==25.0
@@ -23,6 +25,7 @@ python-dotenv==1.1.1
 pytz==2025.2
 PyYAML==6.0.2
 redis==6.4.0
+requests==2.31.0
 six==1.17.0
 sqlparse==0.5.3
 tzdata==2025.2
