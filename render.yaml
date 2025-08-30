@@ -1,11 +1,10 @@
 services:
-  # Main Django Web Service
+  # Main Django Web Service (Docker)
   - type: web
     name: event-booking-api
-    env: python
+    env: docker
+    dockerfilePath: ./Dockerfile
     plan: starter
-    buildCommand: "./build.sh"
-    startCommand: "gunicorn --bind 0.0.0.0:$PORT --workers 3 --timeout 120 --keep-alive 2 app.wsgi:application"
     envVars:
       - key: ENVIRONMENT
         value: production
@@ -16,30 +15,17 @@ services:
       - key: ALLOWED_HOSTS
         value: event-booking-api.onrender.com
       - key: DB_NAME
-        fromDatabase:
-          name: events
-          property: database
+        sync: false
       - key: DB_USER
-        fromDatabase:
-          name: events
-          property: user
+        sync: false
       - key: DB_PASSWORD
-        fromDatabase:
-          name: events
-          property: password
+        sync: false
       - key: DB_HOST
-        fromDatabase:
-          name: events
-          property: host
+        sync: false
       - key: DB_PORT
-        fromDatabase:
-          name: events
-          property: port
+        sync: false
       - key: REDIS_URL
-        fromService:
-          type: redis
-          name: events-redis
-          property: connectionString
+        sync: false
       - key: TICKETMASTER_API_KEY
         sync: false
       - key: EMAIL_HOST
@@ -62,16 +48,4 @@ services:
         value: https://event-booking-api.onrender.com,https://my-frontend-domain.com
     healthCheckPath: /health/
     autoDeploy: true
-
-  # PostgreSQL Database
-  - type: pserv
-    name: events
-    env: postgresql
-    plan: starter
-
-  # Redis Service
-  - type: redis
-    name: events-redis
-    plan: starter
-    ipAllowList: []
   
