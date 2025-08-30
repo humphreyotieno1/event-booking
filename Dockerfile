@@ -43,5 +43,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:$PORT/health/ || exit 1
 
-# Run migrations and start the application
-CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:$PORT --workers 3 --timeout 120 --keep-alive 2 app.wsgi:application"]
+# Run migrations, create superuser, and start the application
+CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && python manage.py createsuperuser --username $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL --noinput || true && gunicorn --bind 0.0.0.0:$PORT --workers 3 --timeout 120 --keep-alive 2 app.wsgi:application"]
