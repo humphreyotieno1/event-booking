@@ -140,7 +140,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'app.authentication.FlexibleJWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
@@ -216,51 +216,53 @@ LOGGING = {
     },
 }
 
-# Swagger/OpenAPI Configuration
+# Swagger/OpenAPI Configuration - Best Practices
 SWAGGER_SETTINGS = {
+    # Security Definitions
     'SECURITY_DEFINITIONS': {
         'Bearer': {
             'type': 'apiKey',
             'name': 'Authorization',
             'in': 'header',
-            'description': 'JWT Authorization header. Enter your JWT token here - the "Bearer " prefix is added automatically by the system.'
+            'description': 'JWT Bearer token. Format: Bearer <your_jwt_token>'
         }
     },
+    
+    # Security Requirements
+    'SECURITY': [
+        {'Bearer': []}
+    ],
+    
+    # UI Settings
     'USE_SESSION_AUTH': False,
     'JSON_EDITOR': True,
-    'SUPPORTED_SUBMIT_METHODS': [
-        'get',
-        'post',
-        'put',
-        'delete',
-        'patch'
-    ],
+    'SUPPORTED_SUBMIT_METHODS': ['get', 'post', 'put', 'delete', 'patch'],
+    
+    # Display Settings
     'OPERATIONS_SORTER': 'alpha',
     'TAGS_SORTER': 'alpha',
     'DOC_EXPANSION': 'list',
     'DEFAULT_MODEL_RENDERING': 'example',
     'DEEP_LINKING': True,
     'DISPLAY_OPERATION_ID': True,
-    'DEFAULT_INFO': 'Event Booking API v1',
+    
+    # Information
+    'DEFAULT_INFO': 'Event Booking API v1.0',
     'VALIDATOR_URL': None,
+    
+    # Headers and Extensions
     'SHOW_REQUEST_HEADERS': True,
     'SHOW_EXTENSIONS': True,
     'SHOW_COMMON_EXTENSIONS': True,
-    'DEFAULT_MODEL_DEPTH': 3,
-    'DEFAULT_FILTER_INSPECTORS': [],
-    'DEFAULT_PAGINATOR_INSPECTORS': [],
-    'SECURITY': [
-        {
-            'Bearer': []
-        }
-    ],
-    # Custom Swagger UI configuration for better JWT handling
+    'DEFAULT_MODEL_DEPTH': 2,
+    
+    # Swagger UI Customization
     'SWAGGER_UI_SETTINGS': {
         'deepLinking': True,
         'persistAuthorization': True,
         'displayOperationId': True,
-        'defaultModelsExpandDepth': 3,
-        'defaultModelExpandDepth': 3,
+        'defaultModelsExpandDepth': 2,
+        'defaultModelExpandDepth': 2,
         'defaultModelRendering': 'example',
         'displayRequestDuration': True,
         'docExpansion': 'list',
@@ -271,45 +273,48 @@ SWAGGER_SETTINGS = {
             'activated': True,
             'theme': 'monokai'
         },
-        'tryItOutEnabled': True
+        'tryItOutEnabled': True,
+        'requestInterceptor': 'function(request) { if (request.headers.Authorization && !request.headers.Authorization.startsWith("Bearer ")) { request.headers.Authorization = "Bearer " + request.headers.Authorization; } return request; }'
     },
+    
+    # API Tags with Clear Descriptions
     'TAGS': [
         {
             'name': 'Public',
-            'description': 'Endpoints accessible without authentication - Event discovery and basic information'
+            'description': '🔓 Public endpoints - No authentication required'
         },
         {
             'name': 'Authentication',
-            'description': 'User registration, login, and JWT token management'
+            'description': '🔐 User authentication and JWT token management'
         },
         {
             'name': 'User Management',
-            'description': 'User profile management and personal data operations'
+            'description': '👤 User profile and account management'
         },
         {
             'name': 'Events',
-            'description': 'Core event management with role-based access control'
+            'description': '🎉 Core event management with role-based access'
         },
         {
             'name': 'Organizer',
-            'description': 'Organizer-specific endpoints for event management and analytics'
+            'description': '🎯 Organizer-specific event management and analytics'
         },
         {
             'name': 'Admin',
-            'description': 'Administrative endpoints for system management and analytics'
+            'description': '👑 Administrative endpoints for system management'
         },
         {
             'name': 'RSVP',
-            'description': 'RSVP management, attendance tracking, and capacity control'
+            'description': '✅ RSVP management and attendance tracking'
         },
         {
             'name': 'External Events',
-            'description': 'Integration with external event platforms and import functionality'
+            'description': '🌐 Integration with external event platforms'
         }
     ]
 }
 
-# DRF YASG Configuration
+# ReDoc Configuration - Best Practices
 REDOC_SETTINGS = {
     'LAZY_RENDERING': False,
     'HIDE_HOSTNAME': False,
@@ -320,7 +325,23 @@ REDOC_SETTINGS = {
         'colors': {
             'primary': {
                 'main': '#4F46E5'
+            },
+            'success': {
+                'main': '#10B981'
+            },
+            'warning': {
+                'main': '#F59E0B'
+            },
+            'error': {
+                'main': '#EF4444'
             }
+        },
+        'typography': {
+            'fontSize': '14px',
+            'lineHeight': '1.5em'
+        },
+        'sidebar': {
+            'width': '300px'
         }
     }
 }

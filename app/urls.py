@@ -6,84 +6,129 @@ from drf_yasg import openapi
 from django.http import HttpResponse
 
 
-# Schema View for Swagger/OpenAPI
+# Schema View for Swagger/OpenAPI - Best Practices
 schema_view = get_schema_view(
     openapi.Info(
-        title="Event Booking API",
-        default_version='v1',
+        title="🎉 Event Booking API",
+        default_version='v1.0',
         description="""
-# Event Booking System API Documentation
+# 🚀 **Event Booking API v1.0**
 
-Welcome to the Event Booking System API! This comprehensive API provides event management, user authentication, RSVP handling, and external event integration capabilities.
+A modern, scalable event management platform built with Django REST Framework and comprehensive role-based access control.
 
-## 🏗️ **System Architecture**
+## 🏗️ **Architecture Overview**
 
-The API is organized into four main access levels, each providing different capabilities based on user roles:
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Backend** | Django 5.2 + DRF | RESTful API with advanced features |
+| **Database** | PostgreSQL | Robust data storage with advanced querying |
+| **Authentication** | JWT (SimpleJWT) | Secure token-based authentication |
+| **Background Tasks** | Celery + Redis | Asynchronous processing |
+| **Caching** | Redis | Performance optimization |
+| **Documentation** | OpenAPI 3.0 | Interactive API documentation |
 
-### 🌐 **Public Endpoints (No Authentication Required)**
-- **Event Discovery**: Browse events, categories, and tags
-- **Basic Information**: Access public event details and listings
-- **Search & Filter**: Find events by various criteria
+## 🔐 **Access Control Matrix**
 
-### 🔐 **Authenticated User Endpoints (Login Required)**
-- **Personal Management**: RSVP operations, profile management
-- **Enhanced Data**: Access to personal event insights and statistics
-- **User Interactions**: Reviews, ratings, and personal event history
+| Endpoint Type | Authentication | User Role | Description |
+|---------------|----------------|-----------|-------------|
+| **Public** | ❌ None | 👥 Everyone | Event discovery, categories, tags |
+| **Authenticated** | ✅ JWT Token | 👤 Registered Users | RSVP, reviews, enhanced data |
+| **Organizer** | ✅ JWT Token | 🎯 Event Organizers | Event management, analytics |
+| **Admin** | ✅ JWT Token | 👑 Administrators | System management, full access |
 
-### 🎯 **Organizer Endpoints (Organizer Role Required)**
-- **Event Management**: Create, edit, and delete events
-- **Analytics Dashboard**: Comprehensive event performance insights
-- **Attendee Management**: Detailed attendee lists and management
+## 🚀 **Quick Start Guide**
 
-### 👑 **Admin Endpoints (Staff/Superuser Required)**
-- **System Administration**: User management and system analytics
-- **Content Management**: Categories, tags, and platform content
-- **Platform Analytics**: System-wide statistics and performance metrics
+### 1. **Authentication Flow**
+```bash
+# Register new account
+POST /api/accounts/register/
+{
+  "username": "your_username",
+  "email": "your_email@example.com",
+  "password": "your_password"
+}
 
-## 🔑 **Authentication**
+# Login to get JWT tokens
+POST /api/accounts/login/
+{
+  "username": "your_username",
+  "password": "your_password"
+}
 
-This API uses JWT (JSON Web Token) authentication. Include your token in the Authorization header:
-
+# Response includes access and refresh tokens
+{
+  "tokens": {
+    "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+    "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+  }
+}
 ```
-Authorization: Bearer <your_jwt_token>
+
+### 2. **Using JWT in Swagger**
+1. Click the **🔒 Authorize** button at the top
+2. Enter your JWT token (without "Bearer" prefix)
+3. Click **Authorize**
+4. The system automatically adds the "Bearer " prefix
+
+### 3. **Token Refresh**
+```bash
+POST /api/accounts/token/refresh/
+{
+  "refresh": "your_refresh_token"
+}
 ```
 
-## 📚 **API Categories**
+## 📊 **API Categories**
 
-- **Accounts**: User authentication, registration, and profile management
-- **Events**: Core event management with role-based access control
-- **RSVP**: Attendance management and capacity control
-- **External Events**: Integration with external event platforms
-
-## 🚀 **Getting Started**
-
-1. **Register**: Create an account at `/api/accounts/register/`
-2. **Authenticate**: Login at `/api/accounts/login/` to get JWT tokens (access + refresh)
-3. **Use JWT**: In Swagger, click "Authorize" and enter your JWT token (the "Bearer" prefix is added automatically)
-4. **Refresh Token**: Use `/api/accounts/token/refresh/` when access token expires
-5. **Explore**: Browse events at `/api/events/`
-6. **Interact**: RSVP to events at `/api/rsvp/events/{id}/rsvp/`
-
-## 📊 **Rate Limiting**
-
-- **Anonymous Users**: 100 requests per hour
-- **Authenticated Users**: 1000 requests per hour
+- **🔓 Public**: Event discovery, categories, tags
+- **🔐 Authentication**: Registration, login, password management
+- **👤 User Management**: Profile management, account settings
+- **🎉 Events**: Core event CRUD operations
+- **🎯 Organizer**: Event management and analytics
+- **👑 Admin**: System administration and analytics
+- **✅ RSVP**: Attendance management and tracking
+- **🌐 External Events**: Third-party platform integration
 
 ## 🔒 **Security Features**
 
-- JWT-based authentication with access and refresh tokens
-- Role-based access control (RBAC)
-- Rate limiting and throttling
-- Input validation and sanitization
-- CORS protection and security headers
+- **JWT Authentication**: Secure token-based authentication
+- **Role-Based Access Control**: Granular permission system
+- **Rate Limiting**: Protection against abuse
+- **Input Validation**: Comprehensive data sanitization
+- **CORS Protection**: Cross-origin request security
+- **HTTPS Ready**: Production security compliance
 
-For more detailed information, visit our [GitHub repository](https://github.com/yourusername/event-booking) or contact our support team.
+## 📈 **Performance Features**
+
+- **Database Optimization**: Advanced querying with Django ORM
+- **Caching Layer**: Redis-based performance enhancement
+- **Asynchronous Processing**: Celery background tasks
+- **Pagination**: Efficient data retrieval
+- **Filtering & Search**: Advanced data querying
+
+## 🛠️ **Development & Testing**
+
+- **Unit Tests**: Comprehensive test coverage
+- **Integration Tests**: API endpoint testing
+- **Performance Testing**: Load and stress testing
+- **Documentation**: Auto-generated OpenAPI specs
+
+## 📚 **Additional Resources**
+
+- **GitHub Repository**: [Event Booking Platform](https://github.com/yourusername/event-booking)
+- **API Status**: [Health Check Endpoint](/api/health/)
+- **Support**: support@eventbooking.com
+- **Documentation**: [Full API Reference](https://docs.eventbooking.com)
+
+---
+
+*Built with ❤️ using Django REST Framework and modern web technologies*
         """,
-        terms_of_service="https://www.yourapp.com/terms/",
+        terms_of_service="https://eventbooking.com/terms/",
         contact=openapi.Contact(
-            name="Event Booking Support",
+            name="Event Booking Support Team",
             email="support@eventbooking.com",
-            url="https://github.com/yourusername/event-booking"
+            url="https://eventbooking.com/support"
         ),
         license=openapi.License(
             name="MIT License",
@@ -91,7 +136,7 @@ For more detailed information, visit our [GitHub repository](https://github.com/
         ),
         version="1.0.0",
         x_logo={
-            "url": "https://via.placeholder.com/200x200/4F46E5/FFFFFF?text=EB",
+            "url": "https://via.placeholder.com/200x200/4F46E5/FFFFFF?text=🎉",
             "backgroundColor": "#4F46E5"
         }
     ),
@@ -109,26 +154,45 @@ urlpatterns = [
     # Home
     path('', lambda request: HttpResponse('''
         <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
-            <h1 style="color: #4F46E5;">🎉 Welcome to Event Booking API</h1>
+            <h1 style="color: #4F46E5;">🎉 Event Booking API v1.0</h1>
             <p style="font-size: 18px; color: #6B7280;">
-                A comprehensive event management platform with role-based access control
+                A modern, scalable event management platform with comprehensive role-based access control
             </p>
             <div style="margin: 30px 0;">
                 <a href="/api/docs/" style="background: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 0 10px;">
-                    📚 API Documentation
+                    📚 Swagger UI
                 </a>
                 <a href="/api/redoc/" style="background: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 0 10px;">
                     📖 ReDoc
                 </a>
             </div>
-            <div style="background: #F3F4F6; padding: 20px; border-radius: 8px; max-width: 600px; margin: 0 auto;">
-                <h3 style="color: #374151;">🚀 Quick Start</h3>
-                <ul style="text-align: left; color: #6B7280;">
-                    <li><strong>Public Access:</strong> Browse events without authentication</li>
-                    <li><strong>User Registration:</strong> Create account for enhanced features</li>
-                    <li><strong>Organizer Role:</strong> Manage and create events</li>
-                    <li><strong>Admin Access:</strong> Full system administration</li>
-                </ul>
+            <div style="background: #F3F4F6; padding: 20px; border-radius: 8px; max-width: 700px; margin: 0 auto;">
+                <h3 style="color: #374151;">🚀 Quick Start Guide</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left; color: #6B7280;">
+                    <div>
+                        <h4 style="color: #4F46E5;">🔐 Authentication</h4>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            <li>Register at <code>/api/accounts/register/</code></li>
+                            <li>Login at <code>/api/accounts/login/</code></li>
+                            <li>Use JWT tokens for protected endpoints</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: #10B981;">🎯 Access Levels</h4>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            <li><strong>Public:</strong> Browse events & categories</li>
+                            <li><strong>Authenticated:</strong> RSVP & reviews</li>
+                            <li><strong>Organizer:</strong> Event management</li>
+                            <li><strong>Admin:</strong> System administration</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 30px; padding: 20px; background: #EFF6FF; border-radius: 8px; max-width: 700px; margin-left: auto; margin-right: auto;">
+                <h3 style="color: #1E40AF;">💡 Pro Tips</h3>
+                <p style="color: #374151; margin: 0;">
+                    <strong>JWT Authentication:</strong> In Swagger, click "Authorize" and enter your token without the "Bearer" prefix - it's added automatically! 🎯
+                </p>
             </div>
         </div>
     '''), name='home'),
