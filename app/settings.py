@@ -124,7 +124,11 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD', ''),
         'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '5432'),
-        **({'OPTIONS': {'sslmode': 'require'}} if IS_PRODUCTION else {})
+        **({'OPTIONS': {
+            'sslmode': 'require',
+            'connect_timeout': 10,
+            'application_name': 'event_booking_api'
+        }} if IS_PRODUCTION else {})
     }
 }
 
