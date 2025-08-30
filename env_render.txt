@@ -1,0 +1,33 @@
+# Production Environment Variables for Render
+# Copy these values to your Render web service environment variables
+
+# Database (Your existing PostgreSQL)
+DB_NAME=events_pq4z
+DB_USER=banta
+DB_PASSWORD=2fepR2roULpgc15XTxeVx2vfSbSkg2Bv
+DB_HOST=dpg-d2pj25ur433s73dcalj0-a
+DB_PORT=5432
+
+# Django Settings
+ENVIRONMENT=production
+DEBUG=false
+SECRET_KEY=your-actual-secret-key-here-change-this
+
+# Redis (After creating Redis service in Render)
+REDIS_URL=redis://events-redis.onrender.com:6379/0
+
+# External Services (Fill in your actual values)
+TICKETMASTER_API_KEY=your-actual-ticketmaster-api-key
+EMAIL_HOST_USER=your-actual-email@gmail.com
+EMAIL_HOST_PASSWORD=your-actual-app-password
+DEFAULT_FROM_EMAIL=your-actual-email@gmail.com
+
+# Frontend Configuration (Fill in your actual domains)
+FRONTEND_URL=https://your-actual-frontend-domain.com
+CORS_ALLOWED_ORIGINS=https://your-actual-frontend-domain.com,https://your-app-name.onrender.com
+CSRF_TRUSTED_ORIGINS=https://your-app-name.onrender.com,https://your-actual-frontend-domain.com
+
+# Email Settings
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=true

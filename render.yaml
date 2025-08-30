@@ -15,15 +15,15 @@ services:
       - key: ALLOWED_HOSTS
         value: event-booking-api.onrender.com
       - key: DB_NAME
-        sync: false
+        value: events_pq4z
       - key: DB_USER
-        sync: false
+        value: banta
       - key: DB_PASSWORD
-        sync: false
+        value: 2fepR2roULpgc15XTxeVx2vfSbSkg2Bv
       - key: DB_HOST
-        sync: false
+        value: dpg-d2pj25ur433s73dcalj0-a
       - key: DB_PORT
-        sync: false
+        value: 5432
       - key: REDIS_URL
         sync: false
       - key: TICKETMASTER_API_KEY
