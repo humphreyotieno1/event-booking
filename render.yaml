@@ -73,4 +73,5 @@ services:
   - type: redis
     name: events-redis
     plan: starter
+    ipAllowList: []
   
