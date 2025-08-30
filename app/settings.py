@@ -199,6 +199,18 @@ REST_FRAMEWORK = {
 # Custom user model
 AUTH_USER_MODEL = "accounts.User"
 
+# Admin site configuration
+ADMIN_SITE_HEADER = "Event Booking Admin"
+ADMIN_SITE_TITLE = "Event Booking Admin Portal"
+ADMIN_SITE_INDEX_TITLE = "Welcome to Event Booking Administration"
+
+# Admin site customization
+if IS_PRODUCTION:
+    # Production admin settings
+    ADMIN_SITE_HEADER = os.getenv('ADMIN_SITE_HEADER', ADMIN_SITE_HEADER)
+    ADMIN_SITE_TITLE = os.getenv('ADMIN_SITE_TITLE', ADMIN_SITE_TITLE)
+    ADMIN_SITE_INDEX_TITLE = os.getenv('ADMIN_SITE_INDEX_TITLE', ADMIN_SITE_INDEX_TITLE)
+
 # JWT configuration
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),

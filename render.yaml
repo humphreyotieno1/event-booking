@@ -45,7 +45,11 @@ services:
       - key: CORS_ALLOWED_ORIGINS
         value: https://my-frontend-domain.com,https://event-booking-api.onrender.com
       - key: CSRF_TRUSTED_ORIGINS
-        value: https://event-booking-api.onrender.com,https://my-frontend-domain.com
+        value: https://event-booking-api-xf5e.onrender.com,https://my-frontend-domain.com
+      - key: SESSION_COOKIE_DOMAIN
+        value: .onrender.com
+      - key: CSRF_COOKIE_DOMAIN
+        value: .onrender.com
     healthCheckPath: /health/
     autoDeploy: true
   
