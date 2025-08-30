@@ -12,6 +12,8 @@ from .serializers import (
 )
 from events.models import Event, EventCategory, EventTag
 from events.serializers import EventSerializer
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 class ExternalEventViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -37,7 +39,49 @@ class ExternalEventViewSet(viewsets.ReadOnlyModelViewSet):
             return ExternalEvent.objects.none()
         
         return ExternalEvent.objects.all()
+
+    @swagger_auto_schema(
+        operation_description="List all external events from various providers",
+        operation_summary="List External Events",
+        tags=['External Events'],
+        responses={
+            200: openapi.Response('Success', ExternalEventSerializer(many=True)),
+            400: 'Bad Request'
+        }
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_description="Get detailed information about a specific external event",
+        operation_summary="Get External Event Details",
+        tags=['External Events'],
+        responses={
+            200: openapi.Response('Success', ExternalEventSerializer),
+            404: 'Event Not Found'
+        }
+    )
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
     
+    @swagger_auto_schema(
+        operation_description="Search external events from various providers (Ticketmaster, SeatGeek)",
+        operation_summary="Search External Events",
+        tags=['External Events'],
+        manual_parameters=[
+            openapi.Parameter('provider', openapi.IN_QUERY, description="Event provider (ticketmaster, seatgeek)", type=openapi.TYPE_STRING),
+            openapi.Parameter('query', openapi.IN_QUERY, description="Search query", type=openapi.TYPE_STRING),
+            openapi.Parameter('location', openapi.IN_QUERY, description="Location for events", type=openapi.TYPE_STRING),
+            openapi.Parameter('category', openapi.IN_QUERY, description="Event category", type=openapi.TYPE_STRING),
+            openapi.Parameter('date_from', openapi.IN_QUERY, description="Start date (YYYY-MM-DD)", type=openapi.TYPE_STRING),
+            openapi.Parameter('date_to', openapi.IN_QUERY, description="End date (YYYY-MM-DD)", type=openapi.TYPE_STRING),
+        ],
+        responses={
+            200: openapi.Response('Success', ExternalEventSerializer(many=True)),
+            400: 'Bad Request - Invalid search parameters',
+            500: 'Internal Server Error - API configuration issue'
+        }
+    )
     @action(detail=False, methods=['get'])
     def search(self, request):
         """Search external events from various providers."""
@@ -206,6 +250,18 @@ class ExternalEventViewSet(viewsets.ReadOnlyModelViewSet):
             'raw_data': event_data
         }
     
+    @swagger_auto_schema(
+        operation_description="Import an external event into the local database (Organizer role required)",
+        operation_summary="Import External Event",
+        tags=['External Events'],
+        request_body=ExternalEventImportSerializer,
+        responses={
+            201: openapi.Response('Event Imported Successfully', EventSerializer),
+            400: 'Bad Request - Event already imported or invalid data',
+            401: 'Unauthorized',
+            403: 'Forbidden - Organizer role required'
+        }
+    )
     @action(detail=True, methods=['post'])
     def import_event(self, request, pk=None):
         """Import an external event into the local database."""

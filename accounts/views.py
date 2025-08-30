@@ -395,6 +395,9 @@ def reset_password_verify(request):
 
 @swagger_auto_schema(
     method='post',
+    operation_description="Confirm password reset with new password",
+    operation_summary="Confirm Password Reset",
+    tags=['Authentication'],
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         required=['uid', 'token', 'new_password'],

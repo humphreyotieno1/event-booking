@@ -58,3 +58,63 @@ class CanReviewEvent(permissions.BasePermission):
                 except Event.DoesNotExist:
                     return False
         return True
+
+class IsAdminUser(permissions.BasePermission):
+    """
+    Custom permission to only allow admin users (staff or superuser).
+    """
+    
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and (
+            request.user.is_staff or request.user.is_superuser
+        )
+
+class IsOrganizer(permissions.BasePermission):
+    """
+    Custom permission to only allow organizer users.
+    """
+    
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.is_organizer
+
+class IsAdminOrOrganizer(permissions.BasePermission):
+    """
+    Custom permission to allow both admin users and organizers.
+    """
+    
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and (
+            request.user.is_staff or 
+            request.user.is_superuser or 
+            request.user.is_organizer
+        )
+
+class IsAdminOrEventOwner(permissions.BasePermission):
+    """
+    Custom permission to allow admin users or event owners.
+    """
+    
+    def has_object_permission(self, request, view, obj):
+        # Admin users can access everything
+        if request.user.is_staff or request.user.is_superuser:
+            return True
+        
+        # Event owners can access their own events
+        return obj.created_by == request.user
+
+class IsAdminOrOrganizerOrEventOwner(permissions.BasePermission):
+    """
+    Custom permission to allow admin users, organizers, or event owners.
+    """
+    
+    def has_object_permission(self, request, view, obj):
+        # Admin users can access everything
+        if request.user.is_staff or request.user.is_superuser:
+            return True
+        
+        # Organizers can access events they created
+        if request.user.is_organizer and obj.created_by == request.user:
+            return True
+        
+        # Event owners can access their own events
+        return obj.created_by == request.user

@@ -3,6 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from .models import RSVP
 from .serializers import (
     RSVPSerializer, RSVPCreateSerializer, AttendeeSerializer
@@ -23,7 +25,22 @@ class RSVPViewSet(viewsets.ModelViewSet):
             return RSVP.objects.none()
         
         return RSVP.objects.filter(user=self.request.user).select_related('event', 'user')
-    
+
+    @swagger_auto_schema(
+        operation_description="RSVP to a specific event",
+        operation_summary="RSVP to Event",
+        tags=['RSVP'],
+        manual_parameters=[
+            openapi.Parameter('event_id', openapi.IN_PATH, description="Event ID", type=openapi.TYPE_INTEGER, required=True),
+        ],
+        request_body=RSVPCreateSerializer,
+        responses={
+            201: openapi.Response('RSVP Created', RSVPSerializer),
+            400: 'Bad Request - Event full or past event',
+            401: 'Unauthorized',
+            404: 'Event Not Found'
+        }
+    )
     @action(detail=False, methods=['post'], url_path='events/(?P<event_id>[^/.]+)')
     def rsvp_to_event(self, request, event_id=None):
         """RSVP to a specific event."""
@@ -58,6 +75,19 @@ class RSVPViewSet(viewsets.ModelViewSet):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    @swagger_auto_schema(
+        operation_description="Cancel RSVP to a specific event",
+        operation_summary="Cancel RSVP",
+        tags=['RSVP'],
+        manual_parameters=[
+            openapi.Parameter('event_id', openapi.IN_PATH, description="Event ID", type=openapi.TYPE_INTEGER, required=True),
+        ],
+        responses={
+            200: openapi.Response('RSVP Cancelled', RSVPSerializer),
+            401: 'Unauthorized',
+            404: 'Event or RSVP Not Found'
+        }
+    )
     @action(detail=False, methods=['post'], url_path='events/(?P<event_id>[^/.]+)/cancel')
     def cancel_rsvp(self, request, event_id=None):
         """Cancel RSVP to a specific event."""
@@ -78,6 +108,19 @@ class RSVPViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
     
+    @swagger_auto_schema(
+        operation_description="Get list of attendees for a specific event",
+        operation_summary="Get Event Attendees",
+        tags=['RSVP'],
+        manual_parameters=[
+            openapi.Parameter('event_id', openapi.IN_PATH, description="Event ID", type=openapi.TYPE_INTEGER, required=True),
+        ],
+        responses={
+            200: openapi.Response('Success', AttendeeSerializer(many=True)),
+            401: 'Unauthorized',
+            404: 'Event Not Found'
+        }
+    )
     @action(detail=False, methods=['get'], url_path='events/(?P<event_id>[^/.]+)/attendees')
     def event_attendees(self, request, event_id=None):
         """Get list of attendees for a specific event."""
@@ -87,6 +130,15 @@ class RSVPViewSet(viewsets.ModelViewSet):
         serializer = AttendeeSerializer(attendees, many=True)
         return Response(serializer.data)
     
+    @swagger_auto_schema(
+        operation_description="Get events that the current user has RSVP'd to",
+        operation_summary="Get My Events",
+        tags=['RSVP'],
+        responses={
+            200: openapi.Response('Success', RSVPSerializer(many=True)),
+            401: 'Unauthorized'
+        }
+    )
     @action(detail=False, methods=['get'], url_path='my-events')
     def my_events(self, request):
         """Get events that the current user has RSVP'd to."""

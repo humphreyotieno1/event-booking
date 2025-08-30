@@ -140,7 +140,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'app.authentication.FlexibleJWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
@@ -163,6 +163,13 @@ AUTH_USER_MODEL = "accounts.User"
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'ALGORITHM': 'HS256',
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
 }
 
 # Celery Configuration
@@ -216,7 +223,7 @@ SWAGGER_SETTINGS = {
             'type': 'apiKey',
             'name': 'Authorization',
             'in': 'header',
-            'description': 'JWT Authorization header using the Bearer scheme. Example: "Bearer {token}"'
+            'description': 'JWT Authorization header. Enter your JWT token here - the "Bearer " prefix is added automatically by the system.'
         }
     },
     'USE_SESSION_AUTH': False,
@@ -228,9 +235,92 @@ SWAGGER_SETTINGS = {
         'delete',
         'patch'
     ],
+    'OPERATIONS_SORTER': 'alpha',
+    'TAGS_SORTER': 'alpha',
+    'DOC_EXPANSION': 'list',
+    'DEFAULT_MODEL_RENDERING': 'example',
+    'DEEP_LINKING': True,
+    'DISPLAY_OPERATION_ID': True,
+    'DEFAULT_INFO': 'Event Booking API v1',
+    'VALIDATOR_URL': None,
+    'SHOW_REQUEST_HEADERS': True,
+    'SHOW_EXTENSIONS': True,
+    'SHOW_COMMON_EXTENSIONS': True,
+    'DEFAULT_MODEL_DEPTH': 3,
+    'DEFAULT_FILTER_INSPECTORS': [],
+    'DEFAULT_PAGINATOR_INSPECTORS': [],
+    'SECURITY': [
+        {
+            'Bearer': []
+        }
+    ],
+    # Custom Swagger UI configuration for better JWT handling
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,
+        'displayOperationId': True,
+        'defaultModelsExpandDepth': 3,
+        'defaultModelExpandDepth': 3,
+        'defaultModelRendering': 'example',
+        'displayRequestDuration': True,
+        'docExpansion': 'list',
+        'filter': True,
+        'showExtensions': True,
+        'showCommonExtensions': True,
+        'syntaxHighlight': {
+            'activated': True,
+            'theme': 'monokai'
+        },
+        'tryItOutEnabled': True
+    },
+    'TAGS': [
+        {
+            'name': 'Public',
+            'description': 'Endpoints accessible without authentication - Event discovery and basic information'
+        },
+        {
+            'name': 'Authentication',
+            'description': 'User registration, login, and JWT token management'
+        },
+        {
+            'name': 'User Management',
+            'description': 'User profile management and personal data operations'
+        },
+        {
+            'name': 'Events',
+            'description': 'Core event management with role-based access control'
+        },
+        {
+            'name': 'Organizer',
+            'description': 'Organizer-specific endpoints for event management and analytics'
+        },
+        {
+            'name': 'Admin',
+            'description': 'Administrative endpoints for system management and analytics'
+        },
+        {
+            'name': 'RSVP',
+            'description': 'RSVP management, attendance tracking, and capacity control'
+        },
+        {
+            'name': 'External Events',
+            'description': 'Integration with external event platforms and import functionality'
+        }
+    ]
 }
 
 # DRF YASG Configuration
 REDOC_SETTINGS = {
     'LAZY_RENDERING': False,
+    'HIDE_HOSTNAME': False,
+    'EXPAND_RESPONSES': '200,201',
+    'HIDE_LOADING': False,
+    'JSON_EDITOR': True,
+    'THEME': {
+        'colors': {
+            'primary': {
+                'main': '#4F46E5'
+            }
+        }
+    }
 }

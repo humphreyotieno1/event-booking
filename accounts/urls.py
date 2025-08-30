@@ -2,6 +2,7 @@ from django.urls import path, include
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from rest_framework_simplejwt.views import TokenRefreshView
 from . import views
 
 # Schema View for Account-specific API docs
@@ -19,6 +20,7 @@ account_schema_view = get_schema_view(
 urlpatterns = [
     # Authentication
     path('login/', views.login_view, name='login'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('register/', views.register_view, name='register'),
     
     # Email Verification
