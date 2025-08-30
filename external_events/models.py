@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 class ExternalEvent(models.Model):
     PROVIDER_CHOICES = [
@@ -44,10 +45,21 @@ class ExternalEvent(models.Model):
     def __str__(self):
         return f"{self.title} ({self.provider})"
     
+    def clean(self):
+        super().clean()
+        if not self.start_time:
+            raise ValidationError("Start time is required.")
+        if self.end_time and self.end_time <= self.start_time:
+            raise ValidationError("End time must be after start time.")
+    
     @property
     def is_past(self):
+        if not self.start_time:
+            return False
         return self.start_time < timezone.now()
     
     @property
     def is_upcoming(self):
+        if not self.start_time:
+            return False
         return self.start_time > timezone.now()

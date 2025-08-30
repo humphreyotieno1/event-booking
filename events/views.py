@@ -448,7 +448,7 @@ class EventViewSet(viewsets.ModelViewSet):
                 'review_count': event.reviews.count()
             },
             'performance_analysis': {
-                'days_until_event': (event.start_time - timezone.now()).days,
+                'days_until_event': (event.start_time - timezone.now()).days if event.start_time else None,
                 'rsvp_trend': 'increasing' if event.rsvps.filter(created_at__gte=timezone.now() - timezone.timedelta(days=7)).count() > event.rsvps.filter(created_at__gte=timezone.now() - timezone.timedelta(days=14), created_at__lt=timezone.now() - timezone.timedelta(days=7)).count() else 'decreasing',
                 'capacity_utilization': (event.rsvps.filter(status='going').count() / max(event.max_attendees, 1)) * 100 if event.max_attendees else 0
             }
