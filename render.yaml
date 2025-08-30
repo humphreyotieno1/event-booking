@@ -66,13 +66,11 @@ services:
   # PostgreSQL Database
   - type: pserv
     name: events
-    env: postgres
+    env: postgresql
     plan: starter
-    ipAllowList: []
 
   # Redis Service
   - type: redis
     name: events-redis
     plan: starter
-    ipAllowList: []
   
