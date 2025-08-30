@@ -3,7 +3,8 @@ from django.urls import path, include, re_path
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 
 # Schema View for Swagger/OpenAPI - Best Practices
@@ -150,7 +151,21 @@ POST /api/accounts/token/refresh/
     ]
 )
 
+# Health check view
+@csrf_exempt
+def health_check(request):
+    """Health check endpoint for monitoring"""
+    return JsonResponse({
+        'status': 'healthy',
+        'timestamp': '2025-01-27T12:00:00Z',
+        'service': 'Event Booking API',
+        'version': '1.0.0'
+    })
+
 urlpatterns = [
+    # Health check
+    path('health/', health_check, name='health_check'),
+    
     # Home
     path('', lambda request: HttpResponse('''
         <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">

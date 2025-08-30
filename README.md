@@ -18,7 +18,7 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 
 # Install and configure
 pip install -r requirements.txt
-cp .env.example .env  # Edit with your settings
+./env_switch.sh development  # Sets up development environment
 python manage.py migrate
 python manage.py createsuperuser
 
@@ -93,10 +93,6 @@ The API is organized into four distinct access levels:
 - **[RSVP App](rsvp/README.md)** - Attendance management
 - **[External Events App](external_events/README.md)** - External API integration
 
-## 🛠️ **Installation & Setup**
-
-### **Prerequisites**
-- Python 3.8+, PostgreSQL 12+, Redis 6+, RabbitMQ 3.8+
 
 ### **Environment Variables (.env)**
 ```env
@@ -255,8 +251,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 **Support & Contact**
 
 - **API Documentation**: [http://localhost:8000/api/docs/](http://localhost:8000/api/docs/)
-- **Issues**: [GitHub Issues](https://github.com/yourusername/event-booking/issues)
-- **Email**: support@eventbooking.com
+
 
 ---
 
