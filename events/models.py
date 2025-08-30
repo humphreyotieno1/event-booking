@@ -65,8 +65,17 @@ class Event(models.Model):
     def __str__(self):
         return self.title
     
+    def clean(self):
+        super().clean()
+        if self.end_time and self.start_time and self.end_time <= self.start_time:
+            raise ValidationError("End time must be after start time.")
+        if not self.end_time:
+            raise ValidationError("End time is required.")
+    
     @property
     def is_past(self):
+        if not self.end_time:
+            return False
         return self.end_time < timezone.now()
     
     @property
